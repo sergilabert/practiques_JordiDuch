@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<title>HTML Tutorial</title>
+<body>
+
+<h1>This is a heading</h1>
+<p id="principal">This is a page</p>
+
+<script>
+	fetch('missatge.json')
+	.then(resposta => resposta.json())
+	.then(json => {
+    		document
+      		.getElementById("principal")
+      		.innerHTML = json.missatge;
+  
+ 	 })
+  
+	.catch(error => console.log(error));
+</script>
+
+</body>
+</html>

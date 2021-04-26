@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+<html>
+<title>Exercici</title>
+<style>
+  #map {
+    height: 600px;
+    width: 600px;
+  }
+</style>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</head>
+<body>
+
+<h1>Cercador de Codis Postals</h1>
+
+<br>
+Codi postal: <input type="text" id="text_cp">
+<br/>
+
+<br>
+Num. resultats: <input type="text" id="text_resultats">
+<br/>
+
+
+
+
+
+<input type="button" value="Click" id="the_button">
+</br>
+</br>
+
+<table id="taula-cps">
+	<thead>
+		<tr>
+			<th> Codi Postal </th>
+			<th> Ciutat</th>
+			<th> latitud </th>
+		</tr>
+	</thead>
+	<tbody id='dades-taula'>
+		<tr>
+			<td> cp prova </td>
+			<td> ciutat prova </td>
+			<td> latitud prova </td>
+		</tr>
+
+	</tbody>
+</table>
+
+<br />
+<br />
+
+<div id="map"></div>
+
+
+
+
+<script>
+
+	  var map = L.map("map", {center: [41.286117, 1.249929], zoom: 12});
+
+
+
+      L.tileLayer(
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
+          {attribution: '&copy; <a href="http://' + 
+          'www.openstreetmap.org/copyright">OpenStreetMap</a>'}
+      ).addTo(map);
+
+	function pintar_latitud (latitud, longitud, cp){
+
+		map.flyTo([latitud, longitud], 12)
+
+}
+
+function posar_pin (latitud, longitud, cp){
+
+	L.marker([latitud, longitud]).addTo(map)
+    .bindPopup(cp)
+    .openPopup();
+
+
+		map.flyTo([latitud, longitud], 12)
+
+
+	}
+
+</script>
+
+<script>
+	document
+	.getElementById("the_button")
+	.addEventListener("click",()=>{
+
+		var cp = document.getElementById("text_cp").value;
+
+		var nresultats = document.getElementById("text_resultats").value;
+
+		var url = 'http://api.geonames.org/postalCodeSearchJSON?postalcode_startsWith='+cp+'&country=ES&maxRows='+nresultats+'&username=sergigilabert';
+
+		console.log(url);
+
+	fetch(url)
+	.then(resposta => resposta.json())
+	.then(json => {
+
+		html= "";
+		json.postalCodes.forEach(function(element){
+			console.log(element.placeName);
+
+			//////// Aqui posem la fila de la taula
+
+			html += "<tr>";
+			html += "<td> "+element.postalCode+" </td>";
+			html += "<td> "+element.placeName+" </td>";
+			html += '<td> <input value="Latitud" type="button" onClick="pintar_latitud('+element.lat+','+element.lng+');"> </td>';
+			html += "</tr>";
+
+			//////// Aqui posem la fila del mapa
+			posar_pin(element.lat,element.lng, element.postalCode);
+
+		});
+
+			console.log(html);
+
+    		document
+      		.getElementById('dades-taula')
+      		.innerHTML = html;
+  
+ 	 })
+  
+	.catch(error => console.log(error));
+
+	});
+
+</script>
+
+</body>
+</html
